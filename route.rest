@@ -13,3 +13,14 @@ Content-Type: application/json
     "name" : "Amazing Person",
     "subscriber" : "Web Dev Simplified"
 } 
+
+###
+DELETE http://localhost:3000/subscribers/67b950fcd45fd505ae5fe632
+
+###
+PATCH http://localhost:3000/subscribers/67b951962d93ef52f4638563
+Content-Type: application/json
+
+{
+    "name": "New Name"
+}

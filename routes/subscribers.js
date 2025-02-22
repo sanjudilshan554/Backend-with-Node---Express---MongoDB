@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
 
 // Getting One
 router.get("/:id", getSubscriber, (req, res) => {
-  res.send(res.subscriber.name);
+  res.json(res.subscriber.name);
 });
 
 // Creating One
@@ -33,24 +33,43 @@ router.post("/", async (req, res) => {
 });
 
 // Updating One
-router.post("/:id", (req, res) => {});
+router.patch("/:id", getSubscriber, async (req, res) => {
+    if(req.body.name != null){
+        res.subscriber.name = req.body.name
+    }
+    if(req.body.subscriber != null){
+        res.subscriber.subscriber = req.body.subscriber
+    }
+    try {
+        const updatedSubscriber = await res.subscriber.save()
+    }catch(error){
+        res.status(400).json({ message: err.message })
+    }
+});
 
 // Deleting One
-router.patch("/:id", (req, res) => {});
+router.delete("/:id", getSubscriber, async (req, res) => {
+    try {
+        await Subscriber.findByIdAndDelete(req.params.id)
+        res.json({ message: 'Deleted Subscriber' })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+});
+
 
 async function getSubscriber(req, res, next) {
-  let subscriber;
-  try {
-    subscriber = await Subscriber.findById(req.params.id);
-    if (subscriber == null) {
-      return res.status(404).json({ message: "Cannot find subscriber" });
+    let subscriber
+    try {
+        subscriber = await Subscriber.findById(req.params.id)
+        if (subscriber == null) {
+            return res.status(404).json({ message: 'Cannot find subscriber' })
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.message })
     }
-  } catch (err) {
-    return res.status(500).json({ message: "Cannot find subscriber" });
-  }
-
-  res.subscriber = subscriber;
-  next();
+    res.subscriber = subscriber
+    next()
 }
 
 module.exports = router;
